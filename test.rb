@@ -1,4 +1,7 @@
-
+$LOAD_PATH.unshift(File.dirname('lib/' + __FILE__))
+require 'artist'
+require 'song'
+require 'genre'
 
 def test(title, &b)
   begin
@@ -96,7 +99,7 @@ test 'a song can be added to an artist' do
   assert artist.songs.include?(song)
 end
 
-test 'artists have genres' do
+test 'artists have genres' do #adding a song with the "rap" genre
   artist = Artist.new
   song = Song.new
 
@@ -118,17 +121,26 @@ test 'A genre has a name' do
   assert_equal genre.name, 'rap'
 end
 
-test 'A genre has many songs' do
+test 'A genre has many songs' do #though this adds 2 songs with "rap", the original is still in memory.
+
+  #added this to make it pass. Kosher?
+  Song.reset_songs_count
+
   genre = Genre.new.tap{|g| g.name = 'rap'}
   [1,2].each do
     song = Song.new
     song.genre = genre
   end
+  
+  #test code prints number of songs with genres
+  Song.songs.each do |song|
+    p song if song.genre
+  end
 
   assert_equal genre.songs.count, 2
 end
 
-test 'A genre has many artists' do
+test 'A genre has many artists' do 
   genre = Genre.new.tap{|g| g.name = 'rap'}
 
   [1,2].each do
@@ -160,7 +172,6 @@ test 'The Genre class can keep track of all created genres' do
   genres = [1..5].collect do |i|
     Genre.new
   end
-
   assert_equal Genre.all, genres
 end
 
