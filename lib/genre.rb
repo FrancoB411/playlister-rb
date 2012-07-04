@@ -17,7 +17,8 @@ class Genre
   end
   
   def artists
-    @artists.uniq
+    collect_artists
+    @artists
   end
   
   def name
@@ -25,7 +26,23 @@ class Genre
   end
   
   def songs
-    all_songs_with_genres = Song.songs.keep_if { |i| i.genre }
-    songs_with_this_genre = all_songs_with_genres.keep_if { |i| i.genre.name = self.name}
+    Song.songs.keep_if { |i| i.genre.name = self.name}
   end
+  
+private
+
+  def artist_has_matching_genres?(artist)
+    return false unless artist.genres.any?  
+    for genre in artist.genres
+      return true if genre.name == self.name
+    end
+  end
+    
+  def collect_artists
+    for artist in Artist.all
+       @artists << artist if artist_has_matching_genres?(artist)
+    end
+  end
+  
+  
 end

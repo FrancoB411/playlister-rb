@@ -99,7 +99,7 @@ test 'a song can be added to an artist' do
   assert artist.songs.include?(song)
 end
 
-test 'artists have genres' do #adding a song with the "rap" genre
+test 'artists have genres' do #adding the first song with the "rap" genre
   artist = Artist.new
   song = Song.new
 
@@ -122,8 +122,6 @@ test 'A genre has a name' do
 end
 
 test 'A genre has many songs' do #though this adds 2 songs with "rap", the original is still in memory.
-
-  #added this to make it pass. Kosher?
   Song.reset_songs_count
 
   genre = Genre.new.tap{|g| g.name = 'rap'}
@@ -132,28 +130,24 @@ test 'A genre has many songs' do #though this adds 2 songs with "rap", the origi
     song.genre = genre
   end
   
-  #test code prints number of songs with genres
-  Song.songs.each do |song|
-    p song if song.genre
-  end
-
   assert_equal genre.songs.count, 2
 end
 
 test 'A genre has many artists' do 
+  Artist.reset_artists
   genre = Genre.new.tap{|g| g.name = 'rap'}
-
+  
   [1,2].each do
     artist = Artist.new
     song = Song.new
     song.genre = genre
     artist.add_song(song)
   end
-
   assert_equal genre.artists.count, 2
 end
 
 test 'A genres Artists are unique' do
+  Artist.reset_artists
   genre = Genre.new.tap{|g| g.name = 'rap'}
   artist = Artist.new
 
@@ -183,10 +177,37 @@ end
 # without your song class having this functionality, so go ahead and try
 # to use assert and assert_equal to write some tests.
 
-test 'Can initialize a song'
-test 'A song can have a name'
-test 'A song can have a genre'
-test 'A song has an artist'
+test 'Can initialize a song' do
+  assert Song.new
+end
+  
+test 'A song can have a name' do
+  song = Song.new
+  song.name = "Kinda Heavy"
+  assert_equal song.name, "Kinda Heavy"
+end
+
+test 'A song can have a genre' do
+    song = Song.new
+    song.genre = Genre.new
+
+    assert song.genre
+end
+
+test 'A song can have artists' do
+  song = Song.new
+  song.artists = []
+  assert_equal song.artists, []
+end
+
+test 'A song can return a list of artists' do
+  Song.reset_artists
+  song = Song.new
+  song.artists << Artist.new.tap{ |a| a.name = "artist 1"}
+  song.artists << Artist.new.tap{ |a| a.name = "artist 2"}
+  song.artists
+  assert_equal song.artists.length, 2
+end
 
 # Part 2: Site Generation Using ERB
 # write a ruby script that parses the data within the data directory
